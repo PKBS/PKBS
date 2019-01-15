@@ -14,7 +14,7 @@
 
 get_header();
 ?>
-
+       <h1 class="page-title screen-reader-text"><?php single_post_title(); ?></h1>
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main">
 
