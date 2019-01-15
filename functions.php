@@ -55,7 +55,7 @@ if ( ! function_exists( 'riders_setup' ) ) :
 			'search-form',
 			'comment-form',
 			'comment-list',
-			'gallery',
+			'image gallery',
 			'caption',
 		) );
 
