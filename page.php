@@ -19,7 +19,7 @@ get_header();
 		<main id="main" class="site-main">
 
 		<?php
-		 ( have_posts() ) :
+		while ( have_posts() ) :
 			the_post();
 
 			get_template_part( 'template-parts/content', 'page' );
