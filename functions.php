@@ -61,7 +61,7 @@ if ( ! function_exists( 'riders_setup' ) ) :
 
 		// Set up the WordPress core custom background feature.
 		add_theme_support( 'custom-background', apply_filters( 'riders_custom_background_args', array(
-			'default-color' => 'ffffff',
+			'default-color' => '#66CDAA',
 			'default-image' => '',
 		) ) );
 
@@ -82,6 +82,69 @@ if ( ! function_exists( 'riders_setup' ) ) :
 	}
 endif;
 add_action( 'after_setup_theme', 'riders_setup' );
+
+
+/**
+ * Register custom fonts.
+ */
+function riders_fonts_url() {
+	$fonts_url = '';
+
+	/*
+	 * Translators: If there are characters in your language that are not
+	 * supported by Source Sans Pro and PT Serif, translate this to 'off'. Do not translate
+	 * into your own language.
+	 */
+	$Source_sans_pro = _x( 'on', 'Libre Franklin font: on or off', 'riders' );
+        
+        $pt_serif = _x( 'on', 'Libre Franklin font: on or off', 'riders' );
+        
+        $font_families = array();
+        
+        if ( 'off' !== $Source_sans_pro) {
+             $font_families[] = 'Source Sans Pro:400,400i,700,900' ;
+        }
+        
+        if ( 'off' !== $pt_serif) {
+             $font_families[] = 'Pt Serif:400,400i,700,700i' ;
+        }
+        
+
+	if (in_array('on', array($Source_sans_pro, $pt_serif)) ) {
+		
+
+		
+
+		$query_args = array(
+			'family' => urlencode( implode( '|', $font_families ) ),
+			'subset' => urlencode( 'latin,latin-ext' ),
+		);
+
+		$fonts_url = add_query_arg( $query_args, 'https://fonts.googleapis.com/css' );
+	}
+
+	return esc_url_raw( $fonts_url );
+}
+/**
+ * Add preconnect for Google Fonts.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param array  $urls           URLs to print for resource hints.
+ * @param string $relation_type  The relation type the URLs are printed.
+ * @return array $urls           URLs to print for resource hints.
+ */
+function riders_resource_hints( $urls, $relation_type ) {
+	if ( wp_style_is( 'riders-fonts', 'queue' ) && 'preconnect' === $relation_type ) {
+		$urls[] = array(
+			'href' => 'https://fonts.gstatic.com',
+			'crossorigin',
+		);
+	}
+
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'riders_resource_hints', 10, 2 );
 
 /**
  * Set the content width in pixels, based on the theme's design and stylesheet.
@@ -107,7 +170,27 @@ function riders_widgets_init() {
 	register_sidebar( array(
 		'name'          => esc_html__( 'Sidebar', 'riders' ),
 		'id'            => 'sidebar-1',
-		'description'   => esc_html__( 'Add widgets here.', 'riders' ),
+		'description'   => esc_html__( 'Add sidebar widgets here.', 'riders' ),
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	) );
+        
+        register_sidebar( array(
+		'name'          => esc_html__( 'Page Sidebar', 'riders' ),
+		'id'            => 'sidebar-2',
+		'description'   => esc_html__( 'Add page sidebar widgets here.', 'riders' ),
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	) );
+        
+        register_sidebar( array(
+		'name'          => esc_html__( 'Footer Sidebar', 'riders' ),
+		'id'            => 'footer-1',
+		'description'   => esc_html__( 'Add footer widgets here.', 'riders' ),
 		'before_widget' => '<section id="%1$s" class="widget %2$s">',
 		'after_widget'  => '</section>',
 		'before_title'  => '<h2 class="widget-title">',
@@ -120,6 +203,10 @@ add_action( 'widgets_init', 'riders_widgets_init' );
  * Enqueue scripts and styles.
  */
 function riders_scripts() {
+      // Enqueue google fonts: source Sans Pro and PT Serif
+        wp_enqueue_style('riders-fonts', riders_fonts_url());
+        
+    
 	wp_enqueue_style( 'riders-style', get_stylesheet_uri() );
 
 	wp_enqueue_script( 'riders-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
@@ -146,6 +233,8 @@ require get_template_directory() . '/inc/template-tags.php';
  * Functions which enhance the theme by hooking into WordPress.
  */
 require get_template_directory() . '/inc/template-functions.php';
+
+
 
 /**
  * Customizer additions.
